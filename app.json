@@ -2,6 +2,25 @@
   "expo": {
     "name": "books",
     "slug": "books",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "package": "com.books.app"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.books.app"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
   }
 }
