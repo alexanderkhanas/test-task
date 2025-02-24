@@ -13,6 +13,7 @@
       "bundleIdentifier": "com.books.app"
     },
     "plugins": [
+      "@react-native-firebase/app",
       "expo-router",
       [
         "expo-build-properties",
@@ -20,6 +21,13 @@
           "ios": {
             "useFrameworks": "static"
           }
+        }
+      ],
+      "expo-asset",
+      [
+        "expo-font",
+        {
+          "fonts": ["./src/assets/fonts/georgia.ttf", "./src/assets/fonts/nunito-sans.ttf"]
         }
       ]
     ]

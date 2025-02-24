@@ -1,17 +1,12 @@
-import { Book, BookSlide } from "../../types";
-import {
-  Dimensions,
-  FlatList,
-  ImageBackground,
-  Image,
-  View,
-} from "react-native";
+import { BookSlide } from "../../types";
+import { Dimensions, Image, View, TouchableOpacity } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { useMemo, useRef } from "react";
+import { useCallback, useRef } from "react";
+import { useRouter } from "expo-router";
 
 type Props = {
   slides: BookSlide[];
@@ -19,9 +14,15 @@ type Props = {
 
 const width = Dimensions.get("window").width;
 
-const BooksCarousel = ({ slides }: Props) => {
+const TopBannerSlides = ({ slides }: Props) => {
   const ref = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
+  const router = useRouter();
+
+  const navigateToDetail = useCallback(
+    (id: number) => router.push(`detail/${id}`),
+    [],
+  );
 
   const onPressPagination = (index: number) => {
     ref.current?.scrollTo({
@@ -44,13 +45,14 @@ const BooksCarousel = ({ slides }: Props) => {
         data={slides}
         onProgressChange={progress}
         renderItem={({ index, item }) => (
-          <View
+          <TouchableOpacity
+            onPress={() => navigateToDetail(item.book_id)}
             style={{
               flex: 1,
             }}
           >
             <Image style={{ flex: 1, borderRadius: 20 }} src={item.cover} />
-          </View>
+          </TouchableOpacity>
         )}
       />
 
@@ -66,4 +68,4 @@ const BooksCarousel = ({ slides }: Props) => {
   );
 };
 
-export default BooksCarousel;
+export default TopBannerSlides;
