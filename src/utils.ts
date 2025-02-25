@@ -1,10 +1,5 @@
-import {
-  Extrapolation,
-  interpolate,
-  useSharedValue,
-} from "react-native-reanimated";
+import { Extrapolation, interpolate } from "react-native-reanimated";
 import type { IComputedDirectionTypes } from "react-native-reanimated-carousel";
-import { Animated, ViewStyle } from "react-native";
 
 interface TBaseConfig {
   size: number;

@@ -14,7 +14,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 type Props = {
   onFinish?: () => void;

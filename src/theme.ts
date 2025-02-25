@@ -5,5 +5,6 @@ export const colors = {
   textDarkGrey: "#393637",
   textWhite: "#FFFFFFB2",
   pink: "#DD48A1",
+  pink2: "#D0006E",
   backgroundPurple: "#532454",
 };

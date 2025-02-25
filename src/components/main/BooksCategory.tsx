@@ -1,10 +1,6 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Book } from "../../types";
 import BooksHorizontalList from "../common/BooksHorizontalList";
-import {
-  NunitoSans_600SemiBold,
-  NunitoSans_700Bold,
-} from "@expo-google-fonts/nunito-sans";
 
 type Props = {
   genre: string;

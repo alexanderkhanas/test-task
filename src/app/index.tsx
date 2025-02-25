@@ -1,46 +1,37 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import TopBannerSlides from "../components/main/TopBannerSlides";
 import { colors } from "../theme";
-import { useEffect, useMemo, useState } from "react";
-import { Book, BookSlide } from "../types";
+import { useEffect, useMemo } from "react";
+import { Book } from "../types";
 import BooksCategory from "../components/main/BooksCategory";
-import remoteConfig from "@react-native-firebase/remote-config";
-import CustomSplashScreen from "../components/common/CustomSplashScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useStore } from "../store";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const Index = () => {
-  const [data, setData] = useState<{
-    books: Book[];
-    top_banner_slides: BookSlide[];
-  }>({ books: [], top_banner_slides: [] });
+  const { books, topBannerSlides, fetchJsonData } = useStore();
+
   const booksByGenre = useMemo(() => {
     const temp: { [key: string]: Book[] } = {};
-    data.books.forEach((book) => {
+    books.forEach((book) => {
       if (!temp[book.genre]) temp[book.genre] = [book];
       else temp[book.genre].push(book);
     });
     return temp;
-  }, [data]);
+  }, [books]);
 
   useEffect(() => {
-    remoteConfig().settings.minimumFetchIntervalMillis = 3600000;
-    remoteConfig()
-      .fetchAndActivate()
-      .then(() => {
-        console.log(
-          JSON.parse(remoteConfig().getValue("json_data").asString()),
-        );
-        setData(JSON.parse(remoteConfig().getValue("json_data").asString()));
-      });
+    fetchJsonData();
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={colors.background} style="light" />
       <ScrollView style={styles.inner}>
-        <TopBannerSlides slides={data.top_banner_slides} />
-        <View style={{ flex: 1 }}>
+        <Text style={styles.title}>Library</Text>
+        <TopBannerSlides slides={topBannerSlides} />
+        <View style={styles.categoriesContainer}>
           {Object.entries(booksByGenre).map(([genre, books]) => (
             <BooksCategory key={`${genre}-genre`} genre={genre} books={books} />
           ))}
@@ -51,6 +42,13 @@ const Index = () => {
 };
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 20,
+    fontFamily: "NunitoSans_700Bold",
+    color: colors.pink2,
+    marginBottom: 20,
+    marginTop: 10,
+  },
   container: {
     flex: 1,
   },
@@ -58,6 +56,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     flex: 1,
     paddingHorizontal: 15,
+  },
+  categoriesContainer: {
+    flex: 1,
   },
 });
 

@@ -1,9 +1,9 @@
 import { Book } from "../../types";
-import { Dimensions, Image, View, StyleSheet } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
+import { Dimensions, Image, View, StyleSheet, ViewStyle } from "react-native";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
 import { parallaxLayout } from "../../utils";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   books: Book[];
@@ -14,6 +14,7 @@ type Props = {
 const windowWidth = Dimensions.get("window").width;
 
 const DetailCarousel = ({ books, activeBookIdx, setActiveBookIdx }: Props) => {
+  const ref = useRef<ICarouselInstance | null>(null);
   const progress = useSharedValue<number>(0);
 
   const onSnapToItem = (index: number) => {
@@ -22,13 +23,15 @@ const DetailCarousel = ({ books, activeBookIdx, setActiveBookIdx }: Props) => {
 
   useEffect(() => {
     progress.set(activeBookIdx);
+    ref.current.scrollTo({ index: activeBookIdx });
   }, [activeBookIdx]);
 
   return (
     <Carousel
+      ref={ref}
       data={books}
       height={258}
-      loop={true}
+      loop={false}
       pagingEnabled={true}
       snapEnabled={true}
       width={windowWidth / 2}
@@ -36,17 +39,19 @@ const DetailCarousel = ({ books, activeBookIdx, setActiveBookIdx }: Props) => {
       onSnapToItem={onSnapToItem}
       defaultIndex={activeBookIdx}
       onProgressChange={progress}
-      customAnimation={parallaxLayout(
-        {
-          size: windowWidth / 2,
-          vertical: false,
-        },
-        {
-          parallaxScrollingScale: 1,
-          parallaxAdjacentItemScale: 0.8,
-          parallaxScrollingOffset: 10,
-        },
-      )}
+      customAnimation={
+        parallaxLayout(
+          {
+            size: windowWidth / 2,
+            vertical: false,
+          },
+          {
+            parallaxScrollingScale: 1,
+            parallaxAdjacentItemScale: 0.8,
+            parallaxScrollingOffset: 10,
+          },
+        ) as unknown as () => ViewStyle
+      }
       renderItem={({ item }) => (
         <View>
           <Image style={styles.image} src={item.cover_url} />

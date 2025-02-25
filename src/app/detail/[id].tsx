@@ -6,22 +6,21 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
-import remoteConfig from "@react-native-firebase/remote-config";
 import DetailCarousel from "../../components/detail/DetailCarousel";
 import { useAssets } from "expo-asset";
 import { StatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { type Book } from "../../types";
 import BackIcon from "../../assets/back-icon.svg";
 import DetailBookBody from "../../components/detail/DetailBookBody";
+import { useStore } from "../../store";
 
 const DetailScreen = () => {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [recommendedBooksIds, setRecommendedBooksIds] = useState<number[]>([]);
+  const { youWillLikeSection, detailCarouselBooks, fetchDetailData } =
+    useStore();
   const [activeBookIdx, setActiveBookIdx] = useState<number>(0);
 
-  const activeBook = books[activeBookIdx];
+  const activeBook = detailCarouselBooks[activeBookIdx];
   const router = useRouter();
 
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -33,8 +32,11 @@ const DetailScreen = () => {
   };
 
   const recommendedBooks = useMemo(
-    () => books.filter((book) => recommendedBooksIds.includes(book.id)),
-    [recommendedBooksIds],
+    () =>
+      detailCarouselBooks.filter((book) =>
+        youWillLikeSection.includes(book.id),
+      ),
+    [youWillLikeSection, detailCarouselBooks],
   );
 
   const [assets, error] = useAssets([
@@ -42,25 +44,14 @@ const DetailScreen = () => {
   ]);
 
   useEffect(() => {
-    const foundIndex = books.findIndex((book) => book.id === +id);
+    const foundIndex = detailCarouselBooks.findIndex((book) => book.id === +id);
     if (foundIndex >= 0) {
       setActiveBookIdx(foundIndex);
     }
-  }, [id, books]);
+  }, [id, detailCarouselBooks]);
 
   useEffect(() => {
-    remoteConfig()
-      .fetchAndActivate()
-      .then(() => {
-        setBooks(
-          JSON.parse(remoteConfig().getValue("details_carousel").asString())
-            .books,
-        );
-        setRecommendedBooksIds(
-          JSON.parse(remoteConfig().getValue("json_data").asString())
-            .you_will_like_section,
-        );
-      });
+    fetchDetailData();
   }, []);
   return !!assets ? (
     <ImageBackground style={styles.container} source={assets[0]}>
@@ -70,7 +61,7 @@ const DetailScreen = () => {
         </TouchableOpacity>
         <StatusBar style="light" backgroundColor="rgba(0, 0, 0, 0.0)" />
         <DetailCarousel
-          books={books}
+          books={detailCarouselBooks}
           activeBookIdx={activeBookIdx}
           setActiveBookIdx={setActiveBookIdx}
         />

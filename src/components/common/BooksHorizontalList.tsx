@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { Book, BookId } from "../../types";
 import { colors } from "../../theme";
